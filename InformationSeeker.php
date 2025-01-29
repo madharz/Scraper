@@ -2,38 +2,33 @@
 
 class InformationSeekerFromFile
 {
- private string $filePath = __DIR__ . '/weather_response.html';
+    private const FILE_NAME = 'response.html';
    public function getInfo()
    {
-       try {
 
-           if (!file_exists($this->filePath)) {
-               throw new Exception("Файл не знайдено: $this->filePath");
+           if (!file_exists(self::FILE_NAME)) {
+               throw new Exception("File not found: " . self::FILE_NAME);
            }
 
-           $html = file_get_contents($this->filePath);
-           if ($html === false) {
-               throw new Exception("Не вдалося прочитати файл: $this->filePath");
-           }
+           $html = file_get_contents(self::FILE_NAME);
 
            $dom = new DOMDocument();
-           @$dom->loadHTML($html);
+           libxml_use_internal_errors(true);
+           $dom->loadHTML($html);
 
            $xpath = new DOMXPath($dom);
 
            $cityNode = $xpath->query("//a[@id='map']")->item(0);
-           $city = $cityNode ? trim($cityNode->textContent) : "Місто не знайдено";
+           $city = $cityNode ? trim($cityNode->textContent) : "City not found";
 
            $tempNodes = $xpath->query("//span[@style[contains(., 'color:red')]]");
-           $minTemp = $tempNodes->item(0) ? trim($tempNodes->item(0)->textContent) : "Мінімальна температура не знайдена";
-           $maxTemp = $tempNodes->item(1) ? trim($tempNodes->item(1)->textContent) : "Максимальна температура не знайдена";
+           $minTemp = $tempNodes->item(0) ? trim($tempNodes->item(0)->textContent) : "minTemp not found";
+           $maxTemp = $tempNodes->item(1) ? trim($tempNodes->item(1)->textContent) : "maxTemp not found";
 
-           echo "Місто: $city\n";
-           echo "Мінімальна температура: $minTemp\n";
-           echo "Максимальна температура: $maxTemp\n";
-
-       } catch (Exception $e) {
-           echo "Помилка: " . $e->getMessage();
-       }
+           return [
+               'city' => $city,
+               'minTemp' => $minTemp,
+               'maxTemp' => $maxTemp
+           ];
    }
 }
