@@ -1,19 +1,15 @@
 <?php
-require 'vendor/autoload.php';
+
 require_once __DIR__ . '/MeteopostScraper.php';
 require_once __DIR__ . '/InformationSeeker.php';
 
-$scraper = new MeteopostScraper();
-$seeker = new InformationSeekerFromFile();
-
 try {
-    $scraper->getContent();
-    $weatherInfo = $seeker->getInfo();
+    $scraper = new MeteopostScraper();
+    $html = $scraper->getWeather();
 
-    echo "city: ". $weatherInfo['city'] . "\n";
-    echo "minTemp: ". $weatherInfo['minTemp'] . "\n";
-    echo "maxTemp: ". $weatherInfo['maxTemp'] . "\n";
-
+    $seeker = new InformationSeekerFromFile();
+    header('Content-Type: application/json; charset=UTF-8');
+    echo $seeker->getInfo($html);
 } catch (Exception $e) {
-    throw new Exception("Exception information: " . $e->getMessage());
+    echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }

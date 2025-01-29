@@ -1,9 +1,0 @@
-{
-  "type": "project",
-    "require": {
-        "guzzlehttp/guzzle": "^7.9",
-      "ext-dom": "*",
-      "ext-curl": "*",
-      "ext-libxml": "*"
-    }
-}

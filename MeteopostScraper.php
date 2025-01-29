@@ -1,6 +1,5 @@
 <?php
 
-use GuzzleHttp\Client;
 
 class MeteopostScraper
 {
@@ -8,31 +7,37 @@ class MeteopostScraper
     private const HOST = 'meteopost.com';
     private const FILE_NAME = 'response.html';
 
-    public function getContent(): string
+    /**
+     * @throws Exception
+     */
+    public function getWeather(): string
     {
-       $ch = curl_init(self::getUrl());
-       curl_setopt($ch,CURLOPT_HEADER, TRUE);
-       curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
-       curl_setopt($ch,CURLOPT_RETURNTRANSFER, TRUE);
-       curl_setopt_array($ch,[
-           CURLOPT_USERAGENT => "WeatherScraper/1.0",
-           CURLOPT_HTTPHEADER => [
-               "Accept: text/html,application/xhtml+xml",
-               "Referer: https://meteopost.com"
-           ]
-       ]);
+        return $this->fetchData();
+    }
+    public function fetchData(): string
+    {
+        $ch = curl_init(self::getUrl());
+        curl_setopt($ch,CURLOPT_HEADER, TRUE);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt_array($ch,[
+            CURLOPT_USERAGENT => "WeatherScraper/1.0",
+            CURLOPT_HTTPHEADER => [
+                "Accept: text/html,application/xhtml+xml",
+                "Referer: https://meteopost.com"
+            ]
+        ]);
 
-       $response = curl_exec($ch);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-       if(curl_errno($ch)){
-           throw new Exception('cURL error: ' . curl_error($ch));
-       }
+        if ($httpCode !== 200 || !$response) {
+            throw new Exception("HTTP Error: $httpCode");
+        }
 
-       curl_close($ch);
+        curl_close($ch);
 
-       file_put_contents(self::FILE_NAME, $response);
-
-       return $response;
+        return $response;
 
     }
 

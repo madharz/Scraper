@@ -2,33 +2,25 @@
 
 class InformationSeekerFromFile
 {
-    private const FILE_NAME = 'response.html';
-   public function getInfo()
-   {
+    public function getInfo(string $html)
+    {
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
 
-           if (!file_exists(self::FILE_NAME)) {
-               throw new Exception("File not found: " . self::FILE_NAME);
-           }
+        $xpath = new DOMXPath($dom);
 
-           $html = file_get_contents(self::FILE_NAME);
+        $cityNode = $xpath->query("//a[@id='map']")->item(0);
+        $city = $cityNode ? trim($cityNode->textContent) : "City not found";
 
-           $dom = new DOMDocument();
-           libxml_use_internal_errors(true);
-           $dom->loadHTML($html);
+        $tempNodes = $xpath->query("//span[@style[contains(., 'color:red')]]");
+        $minTemp = $tempNodes->item(0) ? trim($tempNodes->item(0)->textContent) : "minTemp not found";
+        $maxTemp = $tempNodes->item(1) ? trim($tempNodes->item(1)->textContent) : "maxTemp not found";
 
-           $xpath = new DOMXPath($dom);
-
-           $cityNode = $xpath->query("//a[@id='map']")->item(0);
-           $city = $cityNode ? trim($cityNode->textContent) : "City not found";
-
-           $tempNodes = $xpath->query("//span[@style[contains(., 'color:red')]]");
-           $minTemp = $tempNodes->item(0) ? trim($tempNodes->item(0)->textContent) : "minTemp not found";
-           $maxTemp = $tempNodes->item(1) ? trim($tempNodes->item(1)->textContent) : "maxTemp not found";
-
-           return [
-               'city' => $city,
-               'minTemp' => $minTemp,
-               'maxTemp' => $maxTemp
-           ];
-   }
+        return json_encode([
+            'city' => $city,
+            'min_temp' => $minTemp,
+            'max_temp' => $maxTemp
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 }
