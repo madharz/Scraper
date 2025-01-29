@@ -1,5 +1,6 @@
 Клонувати репозиторій:
 git clone https://github.com/user/weather-scraper.git
+
 cd weather-scraper
 
 Встановити залежності:
