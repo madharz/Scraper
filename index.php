@@ -3,6 +3,7 @@
 require_once __DIR__ . '/MeteopostScraper.php';
 require_once __DIR__ . '/InformationSeeker.php';
 
+// @TODO check https://stackoverflow.com/questions/11048835/php-pass-parameters-from-command-line-to-a-php-script
 $cityId = '18697/';
 
 try {
