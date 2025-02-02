@@ -5,18 +5,18 @@ class MeteopostScraper
 {
     private const PROTOCOL = 'https://';
     private const HOST = 'meteopost.com';
-    private const FILE_NAME = 'response.html';
 
     /**
      * @throws Exception
      */
-    public function getWeather(): string
+    public function getWeather(string $cityId): string
     {
-        return $this->fetchData();
+        $url = self::getUrl().'/city/'.$cityId;
+        return $this->fetchData($url);
     }
-    public function fetchData(): string
+    public function fetchData(string $url): string
     {
-        $ch = curl_init(self::getUrl());
+        $ch = curl_init($url);
         curl_setopt($ch,CURLOPT_HEADER, TRUE);
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, TRUE);
