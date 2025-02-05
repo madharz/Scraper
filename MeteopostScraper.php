@@ -9,14 +9,13 @@ class MeteopostScraper
     /**
      * @throws Exception
      */
-    public function getWeather(string $cityId): string
+    public function getWeather(): string
     {
-        $url = self::getUrl().'/city/'.$cityId;
-        return $this->fetchData($url);
+        return $this->fetchData();
     }
-    public function fetchData(string $url): string
+    public function fetchData(): string
     {
-        $ch = curl_init($url);
+        $ch = curl_init(self::getUrl());
         curl_setopt($ch,CURLOPT_HEADER, TRUE);
         curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, TRUE);

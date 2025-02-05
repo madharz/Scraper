@@ -3,16 +3,19 @@
 require_once __DIR__ . '/MeteopostScraper.php';
 require_once __DIR__ . '/InformationSeeker.php';
 
-// @TODO check https://stackoverflow.com/questions/11048835/php-pass-parameters-from-command-line-to-a-php-script
-$cityId = '18697/';
+if ($argc < 2) {
+    exit("Usage: php index.php <city_id>\n");
+}
+
+$cityId = trim($argv[1]);
 
 try {
     $scraper = new MeteopostScraper();
-    $html = $scraper->getWeather($cityId);
+    $html = $scraper->getWeather();
 
     $seeker = new InformationSeekerFromFile();
     header('Content-Type: application/json; charset=UTF-8');
-    echo $seeker->getInfo($html);
+    echo $seeker->getInfo($html,$cityId);
 } catch (Exception $e) {
     echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
 }
